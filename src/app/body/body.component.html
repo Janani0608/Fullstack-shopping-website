@@ -1,0 +1,6 @@
+<p>{{ title }}</p>
+<ul>
+    <li *ngFor="let shirt of shirts">
+        <app-shirt [shirtDetails] = "shirt"></app-shirt>
+    </li>
+</ul>

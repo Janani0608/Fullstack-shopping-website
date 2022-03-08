@@ -7,6 +7,11 @@ const MongoClient = require('mongodb').MongoClient
 
 app.use(bodyparser.json());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+  });
+
 app.get('/shirts', (req, res) => {
     req.header(headers)
     MongoClient.connect('mongodb://0.0.0.0:27017', (err, client) => {

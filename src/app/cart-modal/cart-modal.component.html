@@ -1,7 +1,7 @@
-<div *ngIf="(display | async)">
+<div *ngIf="display">
     <button align = "right" (click)="close()">X</button>
     <table>
-        <tr *ngIf="(quantity | async) != 0">
+        <tr *ngIf="cart_.quantity != 0">
             <th>
                 Product
             </th>
@@ -12,7 +12,7 @@
                 Quantity
             </th>
         </tr>
-        <tr *ngFor="let item of (cart | async)">
+        <tr *ngFor="let item of cart_.cart">
             <th>
                 {{item.name}}
             </th>
@@ -26,10 +26,10 @@
             </th>
 
         </tr>
-        <p *ngIf="(quantity | async) == 0">
+        <p *ngIf="cart_.quantity == 0">
             Cart is empty
         </p>
-        <p>total Price: {{(totalPrice | async)}}</p>
+        <p>total Price: {{ cart_.price }}</p>
     </table>
     
 </div>

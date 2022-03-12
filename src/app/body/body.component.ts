@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ShirtsService } from '../services/shirts.service';
+import { ShirtsService, Shirt } from '../services/shirts.service';
 
 @Component({
   selector: 'app-body',
@@ -7,19 +7,22 @@ import { ShirtsService } from '../services/shirts.service';
   styleUrls: ['./body.component.sass']
 })
 export class BodyComponent implements OnInit {
+  
+  shirts:Shirt[] = [];
 
-  constructor(private service: ShirtsService) { 
-  /*this.service.getShirts().subscribe({
-      next: data =>{
-        this.shirts=data
-      }});
-      console.log(this.shirts)*/
-      this.shirts = this.service.getShirts();
+  title = "List of available shirts";
+
+  constructor(private service: ShirtsService) {
+    
   }
 
   ngOnInit(): void {
+    this.service.getShirts().subscribe(
+      (data) => {
+        this.shirts = data;
+      }
+    );
   }
-  title = "List of available shirts";
-  shirts;
+  
 
 }

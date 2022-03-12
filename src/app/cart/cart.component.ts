@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ShirtsService } from '../services/shirts.service';
+import { emptyCart } from '../constants/constants';
+import { ShirtsService, Shirt, CartState} from '../services/shirts.service';
 
 @Component({
   selector: 'app-cart',
@@ -8,15 +9,20 @@ import { ShirtsService } from '../services/shirts.service';
 })
 export class CartComponent implements OnInit {
 
+  cart: CartState = JSON.parse(window.localStorage.getItem('cart')|| JSON.stringify(emptyCart));
   
-
   constructor(private service: ShirtsService) {
-    this.quantity = this.service.total;
+    this.service.updateCart();
+    this.service.cartObservable.subscribe(
+      (data) => {
+        this.cart = data;
+      }
+    )
   }
 
   ngOnInit(): void {
+    
   }
-  quantity;
 
   openModal(){
     this.service.showCart();

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from '@angular/common/http';
-import { catchError, tap, map } from 'rxjs/operators';
-
+import {LocalStorageService} from 'ngx-webstorage'; 
+import { shirtsURL, emptyCart } from "../constants/constants";
 
 
 export interface Shirt{
@@ -16,32 +16,38 @@ export interface Shirt{
     'quantity': number
 }
 
+export interface CartState{
+    cart: Shirt[],
+    quantity: number,
+    price: number
+}
+
 @Injectable()
 export class ShirtsService {
     
-    private cart = new BehaviorSubject<Shirt[]>([]);
+    //'cart' stores the current set of shirt objects and is an observable so the components are up to date
+    private cart = new BehaviorSubject<CartState>(emptyCart);
     readonly cartObservable = this.cart.asObservable();
 
-    private currentCart: Shirt[] = [];
+    private currentCart: CartState = emptyCart;
     
-    private totalQuantity = new BehaviorSubject<number>(0);
-    readonly total = this.totalQuantity.asObservable();
 
     private currentQuantity: number = 0;
 
+    //'showModal' is used to decalre whether or not the cart modal should appear
     private showModal = new BehaviorSubject<number>(0);
     readonly show = this.showModal.asObservable();
 
     private display: number = 0;
 
-    private priceObservable = new BehaviorSubject<number>(0);
-    readonly totalPrice = this.priceObservable.asObservable();
-
     private currentPrice: number = 0;
 
-    private shirtsUrl:string = "http://localhost:3000/shirts"
+    private shirtsUrl:string = shirtsURL;
 
-    constructor(private http: HttpClient) { }
+
+    constructor(private http: HttpClient, private storage:LocalStorageService) {
+     }
+
 
     showCart() {
         this.display = 1;
@@ -53,52 +59,51 @@ export class ShirtsService {
         this.showModal.next(this.display);
     }
 
-    getTotal() {
-        return this.currentQuantity;
+    updateCart() {
+        let cartObj = JSON.parse(window.localStorage.getItem('cart') || '{}')
+        this.cart.next(Object.assign([], cartObj))
     }
 
     addToCart(item: Shirt) {
-        let add = 1;
-        if (this.currentCart.length === 0){
-            add = 1
-        }
-        else{
-            this.currentCart.forEach((shirt) => {
+        let item_ = item;
+        let quantity_ = item.quantity;
+        this.currentCart.cart.forEach((shirt, i) => {
                 if (item.id === shirt.id) {
-                    let index = this.currentCart.indexOf(item);
-                    this.currentCart[index].quantity += 1;
-                    add = 0;
+                   quantity_ = shirt.quantity;
+                   this.currentCart.cart.splice(i, 1);
+                   item_.quantity = quantity_ + 1;
                 }
-            });
-        }
-        if (add === 1) {
-            this.currentCart.push(item);
-        }
-        this.cart.next(Object.assign([], this.currentCart));
+        });
+        
+        this.currentCart.cart.push(item_);
         this.currentQuantity +=  1;
-        this.totalQuantity.next(this.currentQuantity)
+        this.currentCart.quantity = this.currentQuantity
         this.currentPrice += item.price;
-        this.priceObservable.next(this.currentPrice);
+        this.currentCart.price = this.currentPrice;
+        window.localStorage.setItem('cart', JSON.stringify(this.currentCart));
+        this.updateCart();
+        
     }
 
     removeFromCart(item: Shirt) {
-        this.currentCart.forEach((s, i) => {
-            if (s.id === item.id) {
-                if (item.quantity === 1) {
-                    this.currentCart.splice(i, 1);
+        let item_ = item;
+        let quantity_ = item.quantity;
+        this.currentCart.cart.forEach((shirt, i) => {
+            if (shirt.id === item.id) {
+                quantity_ = shirt.quantity;
+                this.currentCart.cart.splice(i, 1);
+                if (item.quantity != 1) {
+                    item_.quantity = quantity_ - 1;
+                    this.currentCart.cart.push(item_);
                 }
-                else {
-                    let index = this.currentCart.indexOf(item);
-                    this.currentCart[index].quantity -= 1;
-                }
-              
             }
-            this.cart.next(Object.assign([], this.currentCart));
-          });
+        });
         this.currentQuantity -=  1;
-        this.totalQuantity.next(this.currentQuantity)
+        this.currentCart.quantity = this.currentQuantity
         this.currentPrice -= item.price;
-        this.priceObservable.next(this.currentPrice);
+        this.currentCart.price = this.currentPrice;
+        window.localStorage.setItem('cart', JSON.stringify(this.currentCart));
+        this.updateCart();
     }
 
 

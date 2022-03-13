@@ -30,17 +30,12 @@ export class ShirtsService {
     readonly cartObservable = this.cart.asObservable();
 
     private currentCart: CartState = emptyCart;
-    
-
-    private currentQuantity: number = 0;
 
     //'showModal' is used to decalre whether or not the cart modal should appear
     private showModal = new BehaviorSubject<number>(0);
     readonly show = this.showModal.asObservable();
 
     private display: number = 0;
-
-    private currentPrice: number = 0;
 
     private shirtsUrl:string = shirtsURL;
 
@@ -72,29 +67,24 @@ export class ShirtsService {
     }
 
     addToCart(item: Shirt) {
-        this.currentCart = JSON.parse(window.localStorage.getItem('cart') || JSON.stringify(emptyCart));
-        let item_ = item;
-        let quantity_ = item.quantity;
+        let addNew = 1;
         this.currentCart.cart.forEach((shirt, i) => {
-                if (item.id === shirt.id) {
-                   quantity_ = shirt.quantity;
-                   this.currentCart.cart.splice(i, 1);
-                   item_.quantity = quantity_ + 1;
-                }
+            if ( shirt.id === item.id ) {
+                shirt.quantity += 1;
+                addNew = 0;
+            }
         });
-        
-        this.currentCart.cart.push(item_);
-        this.currentQuantity +=  1;
-        this.currentCart.quantity = this.currentQuantity
-        this.currentPrice += item.price;
-        this.currentCart.price = this.currentPrice;
+        if ( addNew === 1 ) {
+            this.currentCart.cart.push(item);
+        }
+        this.currentCart.quantity += 1;
+        this.currentCart.price += item.price;
         window.localStorage.setItem('cart', JSON.stringify(this.currentCart));
         this.updateCart();
         
     }
 
     removeFromCart(item: Shirt) {
-        console.log("Removing")
         this.currentCart.cart.forEach((shirt, i) => {
             if ( shirt.id === item.id ) {
                 if ( shirt.quantity === 1 ) {

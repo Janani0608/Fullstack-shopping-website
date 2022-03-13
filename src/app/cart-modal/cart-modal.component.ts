@@ -8,9 +8,8 @@ import { CartState, Shirt, ShirtsService } from '../services/shirts.service';
   styleUrls: ['./cart-modal.component.sass']
 })
 export class CartModalComponent implements OnInit {
+  
   display: number = 0;
-
-  @Input() cart_:CartState = emptyCart;
   cart:CartState = emptyCart;
   
   constructor(private service:ShirtsService) { 

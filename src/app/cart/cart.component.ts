@@ -9,19 +9,23 @@ import { ShirtsService, Shirt, CartState} from '../services/shirts.service';
 })
 export class CartComponent implements OnInit {
 
-  cart: CartState = JSON.parse(window.localStorage.getItem('cart')|| JSON.stringify(emptyCart));
-  
+  cart: Shirt[] = [];
+  quantity: number = 0;
+  price: number = 0;
+
   constructor(private service: ShirtsService) {
-    this.service.updateCart();
     this.service.cartObservable.subscribe(
       (data) => {
-        this.cart = data;
+        this.cart = data.cart;
+        this.quantity = data.quantity;
+        this.price = data.price;
       }
     )
+    this.service.updateCart();
   }
 
   ngOnInit(): void {
-    
+    this.service.updateCart();
   }
 
   openModal(){

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Shirt, ShirtsService } from '../services/shirts.service';
+import { ShirtsService } from '../services/shirts.service';
+import { Shirt } from "../interfaces/interfaces";
+import { emptyShirt } from "../constants/constants";
 
 @Component({
   selector: 'app-shirt',
@@ -8,16 +10,7 @@ import { Shirt, ShirtsService } from '../services/shirts.service';
 })
 export class ShirtComponent implements OnInit {
   
-  @Input() shirtDetails:Shirt = {
-    '_id': "",
-    'id': 0,
-    'colour': "",
-    'picture': "",
-    'price': 0,
-    'size': "",
-    'name': "",
-    'quantity': 0
-  }
+  @Input() shirtDetails:Shirt = emptyShirt;
 
   constructor(private service: ShirtsService) { 
   }

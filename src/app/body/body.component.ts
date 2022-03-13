@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ShirtsService, Shirt } from '../services/shirts.service';
+import { ShirtsService } from '../services/shirts.service';
+import { Shirt } from "../interfaces/interfaces";
 
 @Component({
   selector: 'app-body',

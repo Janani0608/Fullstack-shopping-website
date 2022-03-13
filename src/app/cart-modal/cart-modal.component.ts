@@ -10,20 +10,26 @@ import { CartState, Shirt, ShirtsService } from '../services/shirts.service';
 export class CartModalComponent implements OnInit {
   display: number = 0;
 
-  @Input() cart_:CartState = emptyCart
+  @Input() cart_:CartState = emptyCart;
+  cart:CartState = emptyCart;
   
   constructor(private service:ShirtsService) { 
-    this.service.updateCart();
     this.service.show.subscribe(
       (data) => {
         this.display = data;
       }
     );
+    this.service.cartObservable.subscribe(
+      (data) => {
+        this.cart = data
+      }
+    )
+    this.service.updateCart();
   }
 
   ngOnInit(): void {
     let input = <HTMLInputElement> document.getElementById("quantityBox");
-    input.value = this.cart_.quantity.toString() || "0";
+    input.value = this.cart.quantity.toString() || "0";
   }
 
   close(){
@@ -36,6 +42,10 @@ export class CartModalComponent implements OnInit {
 
   remove(item:Shirt) {
     this.service.removeFromCart(item);
+  }
+
+  clear() {
+    this.service.clearCart();
   }
 
 }

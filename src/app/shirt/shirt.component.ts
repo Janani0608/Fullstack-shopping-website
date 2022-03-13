@@ -27,7 +27,6 @@ export class ShirtComponent implements OnInit {
   }
 
   addToCart(shirt: Shirt) {
-    console.log("Adding shirt" + shirt+ "to the cart")
     this.service.addToCart(shirt);
   }
 

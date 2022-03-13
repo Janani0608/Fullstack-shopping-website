@@ -3,24 +3,8 @@ import { BehaviorSubject, empty, Observable } from "rxjs";
 import { HttpClient } from '@angular/common/http';
 import {LocalStorageService} from 'ngx-webstorage'; 
 import { shirtsURL, emptyCart } from "../constants/constants";
+import { Shirt, CartState } from "../interfaces/interfaces";
 
-
-export interface Shirt{
-    '_id': String,
-    'id': number,
-    'colour': String,
-    'picture': String,
-    'price': number,
-    'size': String,
-    'name': String,
-    'quantity': number
-}
-
-export interface CartState{
-    cart: Shirt[],
-    quantity: number,
-    price: number
-}
 
 @Injectable()
 export class ShirtsService {

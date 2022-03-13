@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, empty, Observable } from "rxjs";
 import { HttpClient } from '@angular/common/http';
 import {LocalStorageService} from 'ngx-webstorage'; 
 import { shirtsURL, emptyCart } from "../constants/constants";
@@ -46,6 +46,8 @@ export class ShirtsService {
 
 
     constructor(private http: HttpClient, private storage:LocalStorageService) {
+        this.currentCart = JSON.parse(window.localStorage.getItem('cart') || JSON.stringify(emptyCart));
+        this.cart.next(Object.assign({}, this.currentCart));
      }
 
 
@@ -60,11 +62,17 @@ export class ShirtsService {
     }
 
     updateCart() {
-        let cartObj = JSON.parse(window.localStorage.getItem('cart') || '{}')
-        this.cart.next(Object.assign([], cartObj))
+        let cartObj = JSON.parse(window.localStorage.getItem('cart') || JSON.stringify(emptyCart));
+        this.cart.next(Object.assign({}, cartObj))
+    }
+
+    clearCart() {
+        window.localStorage.setItem('cart', JSON.stringify(emptyCart));
+        this.updateCart();
     }
 
     addToCart(item: Shirt) {
+        this.currentCart = JSON.parse(window.localStorage.getItem('cart') || JSON.stringify(emptyCart));
         let item_ = item;
         let quantity_ = item.quantity;
         this.currentCart.cart.forEach((shirt, i) => {
@@ -86,22 +94,19 @@ export class ShirtsService {
     }
 
     removeFromCart(item: Shirt) {
-        let item_ = item;
-        let quantity_ = item.quantity;
+        console.log("Removing")
         this.currentCart.cart.forEach((shirt, i) => {
-            if (shirt.id === item.id) {
-                quantity_ = shirt.quantity;
-                this.currentCart.cart.splice(i, 1);
-                if (item.quantity != 1) {
-                    item_.quantity = quantity_ - 1;
-                    this.currentCart.cart.push(item_);
+            if ( shirt.id === item.id ) {
+                if ( shirt.quantity === 1 ) {
+                    this.currentCart.cart.splice(i, 1);
+                }
+                else {
+                    shirt.quantity -= 1;
                 }
             }
         });
-        this.currentQuantity -=  1;
-        this.currentCart.quantity = this.currentQuantity
-        this.currentPrice -= item.price;
-        this.currentCart.price = this.currentPrice;
+        this.currentCart.quantity -= 1;
+        this.currentCart.price -= item.price;
         window.localStorage.setItem('cart', JSON.stringify(this.currentCart));
         this.updateCart();
     }

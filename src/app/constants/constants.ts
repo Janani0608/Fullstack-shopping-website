@@ -1,4 +1,4 @@
-import { Shirt } from "../services/shirts.service";
+import { Shirt } from "../interfaces/interfaces";
 export const shirtsURL = "http://localhost:3000/shirts";
 export const emptyCart = {
     cart: [] as Shirt[],

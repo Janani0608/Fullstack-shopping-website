@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { emptyCart } from '../constants/constants';
-import { CartState, Shirt, ShirtsService } from '../services/shirts.service';
+import { ShirtsService } from '../services/shirts.service';
+import { Shirt, CartState } from "../interfaces/interfaces";
 
 @Component({
   selector: 'app-cart-modal',

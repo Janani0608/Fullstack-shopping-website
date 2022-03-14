@@ -1,6 +1,6 @@
 <p>{{ title }}</p>
-<ul>
-    <li *ngFor="let shirt of shirts">
+<div class="row">
+    <div *ngFor="let shirt of shirts" class="col-xl-2 col-lg-3 col-md-4 col-sm-12">
         <app-shirt [shirtDetails] = "shirt"></app-shirt>
-    </li>
-</ul>
+    </div>
+</div>
